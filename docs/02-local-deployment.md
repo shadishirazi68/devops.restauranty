@@ -193,10 +193,48 @@ The Items microservice was successfully started, connected to MongoDB, and verif
 
 All three backend microservices were independently started and their database connectivity and initial API availability were verified.
 
-## Next Steps
+## Step 5 — React Frontend Local Deployment
 
-- Configure and run the React frontend.
-- Configure HAProxy and verify path-based routing.
-- Test frontend-to-backend communication.
-- Prepare Dockerfiles and Docker Compose for containerization.
-- Continue with Kubernetes, CI/CD, monitoring, and security configuration.
+### Objective
+
+The Restauranty React frontend was prepared and started locally to verify the application user interface and development server availability.
+
+### Implementation
+
+The frontend dependencies were installed using npm.
+
+An initial dependency synchronization issue was encountered while running `npm ci`. The `package-lock.json` file was updated using `npm install` to resolve the missing dependency.
+
+The React application was started using `npm start`, which executes `react-scripts start`.
+
+The frontend was served locally on port `3000`.
+
+### Verification
+
+The application was accessed in a web browser at:
+
+`http://localhost:3000`
+
+The Restauranty dashboard was successfully displayed, including the Items, Coupons, Campaigns, and Categories sections.
+
+Webpack compilation completed with non-blocking ESLint warnings. These warnings were noted for future code-quality review.
+
+Frontend-to-backend API communication has not yet been verified because HAProxy routing is still pending.
+
+### Evidence
+
+![Frontend Startup](screenshots/02-local/frontend-startup.png)
+
+*Figure 11 — React Frontend Local Startup and Compilation.*
+
+![Frontend Browser](screenshots/02-local/frontend-browser.png)
+
+*Figure 12 — Restauranty Dashboard Displayed in the Browser.*
+
+### Result
+
+**Status: Completed — Initial Frontend Verification**
+
+The React frontend was successfully started and displayed locally.
+
+Full application functionality and API integration will be verified after HAProxy configuration.
