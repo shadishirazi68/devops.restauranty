@@ -238,3 +238,167 @@ Frontend-to-backend API communication has not yet been verified because HAProxy 
 The React frontend was successfully started and displayed locally.
 
 Full application functionality and API integration will be verified after HAProxy configuration.
+
+
+
+---
+
+## Step 6 — HAProxy Configuration and Routing Verification
+
+### Objective
+
+HAProxy was configured as a reverse proxy to provide a single entry point for the Restauranty application and route HTTP requests to the appropriate microservices.
+
+### Implementation
+
+The HAProxy configuration provided in the repository was reviewed and validated.
+
+The following routing configuration was used:
+
+| Request Path | Destination | Port |
+|---|---|---|
+| `/` | React Frontend | 3000 |
+| `/api/auth` | Authentication Service | 3001 |
+| `/api/discounts` | Discounts Service | 3002 |
+| `/api/items` | Items Service | 3003 |
+
+The configuration was validated using:
+
+`haproxy -c -f haproxy.cfg`
+
+The system configuration was backed up before the Restauranty configuration was applied to `/etc/haproxy/haproxy.cfg`.
+
+HAProxy was restarted using systemd.
+
+The service status and listening port were verified using:
+
+`sudo systemctl status haproxy --no-pager`
+
+`sudo ss -ltnp | grep ':80'`
+
+### Troubleshooting — Port 80 Conflict
+
+During the configuration process, port 80 was found to be occupied by the Apache web server.
+
+As a result, requests sent to `/api/auth`, `/api/discounts`, and `/api/items` initially returned Apache HTTP 404 responses.
+
+The port conflict was identified using:
+
+`sudo ss -ltnp | grep ':80'`
+
+Port 80 was subsequently freed, and the Restauranty HAProxy configuration was activated.
+
+The listening process was verified to be HAProxy rather than Apache.
+
+### Evidence — Port Conflict
+
+![HAProxy Port Conflict](screenshots/02-local/haproxy-port-conflict.png)
+
+*Figure 13 — Port 80 Conflict Identified with Apache.*
+
+### Verification — HAProxy Startup
+
+The HAProxy service was confirmed to be active and running.
+
+The service successfully listened on port 80.
+
+![HAProxy Startup](screenshots/02-local/haproxy-startup.png)
+
+*Figure 14 — HAProxy Running and Listening on Port 80.*
+
+### Verification — Backend Routing
+
+The following commands were used to verify path-based routing:
+
+`curl -i http://127.0.0.1/api/auth`
+
+`curl -i http://127.0.0.1/api/discounts`
+
+`curl -i http://127.0.0.1/api/items`
+
+All three endpoints returned HTTP 200 OK with their corresponding service responses.
+
+![HAProxy Routing](screenshots/02-local/haproxy-routing-test.png)
+
+*Figure 15 — Successful HAProxy Routing to All Three Backend Microservices.*
+
+---
+
+## Step 7 — Frontend-to-Backend Integration Testing
+
+### Objective
+
+The communication between the React frontend, HAProxy, and the Authentication backend was tested using the application interface.
+
+### Implementation
+
+The Restauranty application was accessed through:
+
+`http://localhost/`
+
+The dashboard was successfully displayed through HAProxy on port 80.
+
+![Dashboard Through HAProxy](screenshots/02-local/haproxy-browser.png)
+
+*Figure 16 — Restauranty Dashboard Accessed Through HAProxy.*
+
+### Integration Verification
+
+Chrome Developer Tools was used to inspect HTTP requests in the Network panel.
+
+A user registration request was initiated through the React frontend.
+
+The following results were observed:
+
+- Initial signup attempts returned HTTP 400 due to password validation requirements.
+- A subsequent signup request returned HTTP 201 Created.
+- The Auth API was reached through the application's configured routing.
+
+![Frontend Backend Integration](screenshots/02-local/frontend-backend-integration.png)
+
+*Figure 17 — Frontend-to-Backend Signup Request Verification.*
+
+### Result
+
+**Status: Completed — Initial Integration Verification**
+
+The frontend was successfully accessed through HAProxy.
+
+Path-based routing to all three backend microservices was verified.
+
+An initial user registration request was successfully processed, returning HTTP 201 Created.
+
+Full login verification and additional application functionality tests remain pending.
+
+---
+
+## Local Deployment Summary
+
+| Component | Port | Result |
+|---|---|---|
+| MongoDB | 27017 | Verified |
+| Auth | 3001 | Verified |
+| Discounts | 3002 | Verified |
+| Items | 3003 | Verified |
+| React Frontend | 3000 | Verified |
+| HAProxy | 80 | Routing verified |
+| Signup API | Via HAProxy | HTTP 201 Created |
+
+### Conclusion
+
+The Restauranty application components were successfully started and tested in the local Ubuntu development environment.
+
+MongoDB connectivity, backend API availability, frontend rendering, HAProxy routing, and initial signup integration were verified.
+
+The application is ready to proceed to the containerization phase, while full functional and security testing will continue in later stages.
+
+## Next Phase
+
+Phase 3 — Docker Containerization
+
+- Create Dockerfiles for the frontend and three backend microservices.
+- Configure Docker Compose.
+- Configure container networking and environment variables.
+- Integrate MongoDB and HAProxy.
+- Test the containerized application.
+- Build and publish application images to Docker Hub.
