@@ -8,3 +8,5 @@ backend/*/.env
 backend/*/node_modules
 mobile/.expo
 build
+
+.DS_Store
