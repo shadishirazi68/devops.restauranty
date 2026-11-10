@@ -30,7 +30,7 @@ The database returned `{ ok: 1 }`, confirming a successful response.
 
 ![MongoDB Deployment and Verification](screenshots/02-local/mongodb-running.png)
 
-*Figure 3 — MongoDB Container Deployment and Connectivity Verification.*
+*Figure 2 — MongoDB Container Deployment and Connectivity Verification.*
 
 ### Result
 
@@ -70,11 +70,11 @@ The endpoint returned HTTP `200 OK` with the response `"Auth Server UP!"`.
 
 ![Auth Startup](screenshots/02-local/auth-startup.png)
 
-*Figure 5 — Auth Microservice Startup and MongoDB Connection.*
+*Figure 3 — Auth Microservice Startup and MongoDB Connection.*
 
 ![Auth API Test](screenshots/02-local/auth-api-test.png)
 
-*Figure 6 — Auth API Endpoint Verification.*
+*Figure 4 — Auth API Endpoint Verification.*
 
 ### Result
 
@@ -118,11 +118,11 @@ The following results were observed:
 
 ![Discounts Startup](screenshots/02-local/discounts-startup.png)
 
-*Figure 7 — Discounts Microservice Startup and MongoDB Connection.*
+*Figure 5 — Discounts Microservice Startup and MongoDB Connection.*
 
 ![Discounts API Test](screenshots/02-local/discounts-api-test.png)
 
-*Figure 8 — Discounts API Endpoint Verification.*
+*Figure 6 — Discounts API Endpoint Verification.*
 
 ### Result
 
@@ -168,11 +168,11 @@ The dependency installation also reported two moderate-severity vulnerabilities,
 
 ![Items Startup](screenshots/02-local/items-startup.png)
 
-*Figure 9 — Items Microservice Startup and MongoDB Connection.*
+*Figure 7 — Items Microservice Startup and MongoDB Connection.*
 
 ![Items API Test](screenshots/02-local/items-api-test.png)
 
-*Figure 10 — Items API Endpoint Verification.*
+*Figure 8 — Items API Endpoint Verification.*
 
 ### Result
 
@@ -225,11 +225,11 @@ Frontend-to-backend API communication has not yet been verified because HAProxy 
 
 ![Frontend Startup](screenshots/02-local/frontend-startup.png)
 
-*Figure 11 — React Frontend Local Startup and Compilation.*
+*Figure 9 — React Frontend Local Startup and Compilation.*
 
 ![Frontend Browser](screenshots/02-local/frontend-browser.png)
 
-*Figure 12 — Restauranty Dashboard Displayed in the Browser.*
+*Figure 10 — Restauranty Dashboard Displayed in the Browser.*
 
 ### Result
 
@@ -294,7 +294,7 @@ The listening process was verified to be HAProxy rather than Apache.
 
 ![HAProxy Port Conflict](screenshots/02-local/haproxy-port-conflict.png)
 
-*Figure 13 — Port 80 Conflict Identified with Apache.*
+*Figure 11 — Port 80 Conflict Identified with Apache.*
 
 ### Verification — HAProxy Startup
 
@@ -304,7 +304,7 @@ The service successfully listened on port 80.
 
 ![HAProxy Startup](screenshots/02-local/haproxy-startup.png)
 
-*Figure 14 — HAProxy Running and Listening on Port 80.*
+*Figure 12 — HAProxy Running and Listening on Port 80.*
 
 ### Verification — Backend Routing
 
@@ -320,7 +320,7 @@ All three endpoints returned HTTP 200 OK with their corresponding service respon
 
 ![HAProxy Routing](screenshots/02-local/haproxy-routing-test.png)
 
-*Figure 15 — Successful HAProxy Routing to All Three Backend Microservices.*
+*Figure 13 — Successful HAProxy Routing to All Three Backend Microservices.*
 
 ---
 
@@ -340,7 +340,7 @@ The dashboard was successfully displayed through HAProxy on port 80.
 
 ![Dashboard Through HAProxy](screenshots/02-local/haproxy-browser.png)
 
-*Figure 16 — Restauranty Dashboard Accessed Through HAProxy.*
+*Figure 14 — Restauranty Dashboard Accessed Through HAProxy.*
 
 ### Integration Verification
 
@@ -356,7 +356,7 @@ The following results were observed:
 
 ![Frontend Backend Integration](screenshots/02-local/frontend-backend-integration.png)
 
-*Figure 17 — Frontend-to-Backend Signup Request Verification.*
+*Figure 15 — Frontend-to-Backend Signup Request Verification.*
 
 ### Result
 

@@ -29,7 +29,7 @@ The error handlers were modified to return HTTP 401 Unauthorized for missing or 
 
 ![JWT Error Handling](screenshots/03-security/jwt-error-handling.png)
 
-*Figure 18 — Implementation of JWT Unauthorized Error Handling.*
+*Figure 16 — Implementation of JWT Unauthorized Error Handling.*
 
 ## Step 3 — Unauthorized Request Verification
 
@@ -48,7 +48,7 @@ The test confirmed that unauthenticated requests were rejected.
 
 ![Unauthorized JWT Test](screenshots/03-security/jwt-unauthorized-test.png)
 
-*Figure 19 — Protected Items API Rejecting an Unauthorized Request.*
+*Figure 17 — Protected Items API Rejecting an Unauthorized Request.*
 
 ## Step 4 — Frontend JWT Integration
 
@@ -62,7 +62,7 @@ This allows authenticated users to access protected backend resources.
 
 ![JWT Interceptor](screenshots/03-security/frontend-jwt-interceptor.png)
 
-*Figure 21 — Axios Request Interceptor for JWT Authentication.*
+*Figure 18 — Axios Request Interceptor for JWT Authentication.*
 
 ## Step 5 — Same-Origin API Routing
 
@@ -74,7 +74,7 @@ The configuration supports routing through HAProxy locally and Kubernetes Ingres
 
 ![Same-Origin API](screenshots/03-security/frontend-same-origin-api.png)
 
-*Figure 22 — Same-Origin API Configuration in React.*
+*Figure 19 — Same-Origin API Configuration in React.*
 
 ## Step 6 — Authorized Request Verification
 
