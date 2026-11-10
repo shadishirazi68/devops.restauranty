@@ -42,9 +42,50 @@ The MongoDB container is running and responding successfully to connectivity che
 
 Application-level database connections and authentication have not yet been verified.
 
-## Next Steps
 
-- Configure and run the Auth microservice.
-- Configure and run the Discounts and Items microservices.
-- Run the React frontend.
-- Configure HAProxy and verify application routing.
+## Step 2 — Authentication Microservice
+
+### Objective
+
+The Auth microservice was configured and started locally to verify its connection to MongoDB and its HTTP API availability.
+
+### Implementation
+
+The required Node.js dependencies were installed using `npm ci`.
+
+Environment variables were configured locally using the `.env.example` template, without exposing credentials in GitHub.
+
+The Auth service was started using `npm start`, which runs `nodemon server.js`.
+
+The service was configured to listen on port `3001` and connect to the local MongoDB database.
+
+### Verification
+
+The application startup logs confirmed:
+
+- The server was listening on port 3001.
+- The MongoDB connection was established successfully.
+- The `/api/auth` endpoint returned HTTP 200 OK.
+- The response body was `"Auth Server UP!"`.
+
+The following command was used to verify the API:
+
+`curl -i http://127.0.0.1:3001/api/auth`
+
+### Evidence
+
+![Auth Startup](screenshots/02-local/auth-startup.png)
+
+*Figure 5 — Auth Microservice Startup and MongoDB Connection.*
+
+![Auth API Test](screenshots/02-local/auth-api-test.png)
+
+*Figure 6 — Auth API Endpoint Verification.*
+
+### Result
+
+**Status: Completed — Initial Connectivity Verification**
+
+The Auth microservice was successfully started, connected to MongoDB, and verified through an HTTP request.
+
+Authentication workflows such as user registration and login have not yet been tested.
