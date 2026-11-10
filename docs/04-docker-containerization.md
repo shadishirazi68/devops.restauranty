@@ -437,14 +437,284 @@ The API endpoint was verified to return HTTP 200 OK.
 
 Full integration and authorization testing will be completed after configuring Docker Compose.
 
+
+## Step 14 — Items Microservice Dockerization
+
+### Objective
+
+Containerizing the Items microservice using the same Dockerization workflow established for the Authentication and Discounts services.
+
+The objective was to build a secure Docker image, deploy the Items service as an independent container, and verify its HTTP availability.
+
+### 14.1 — Verifying Service Requirements
+
+Before containerization, the necessary dependency and environment files were checked.
+
+**Service directory:**
+
+`backend/items/`
+
+**Verification commands:**
+
+```bash
+test -f backend/items/package-lock.json && echo "LOCK OK"
+test -f backend/items/.env && echo "ENV OK"
+```
+
+**Observed results:**
+
+```text
+LOCK OK
+ENV OK
+```
+
+The `package.json` file was inspected to identify application dependencies and startup requirements.
+
+The application uses Node.js and Express and was configured to run on port 3003.
+
+### 14.2 — Creating the Dockerfile
+
+A Dockerfile was created in:
+
+`backend/items/Dockerfile`
+
+**Dockerfile configuration:**
+
+```dockerfile
+FROM node:22-alpine
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+
+RUN npm ci --omit=dev
+
+COPY --chown=node:node . .
+
+ENV NODE_ENV=production
+
+USER node
+
+EXPOSE 3003
+
+CMD ["node", "server.js"]
+```
+
+The Dockerfile was configured to:
+
+- Use the Node.js 22 Alpine base image.
+- Set `/app` as the working directory.
+- Copy dependency manifests before application source code.
+- Install production dependencies using `npm ci --omit=dev`.
+- Copy the application source files.
+- Configure the production environment.
+- Execute the application as a non-root user.
+- Expose port 3003.
+- Start the application using `node server.js`.
+
+### 14.3 — Creating the Docker Ignore File
+
+A `.dockerignore` file was created to exclude sensitive and unnecessary files from the Docker build context.
+
+**File location:**
+
+`backend/items/.dockerignore`
+
+**Configuration:**
+
+```text
+node_modules
+**/node_modules
+.env
+.env.*
+**/.env
+**/.env.*
+.git
+.DS_Store
+npm-debug.log*
+coverage
+```
+
+This configuration prevents local environment files and development dependencies from being copied into the image.
+
+### 14.4 — Building the Items Docker Image
+
+The Items Docker image was built using the following command:
+
+```bash
+docker build -t restauranty-items:local ./backend/items
+```
+
+The image was successfully built.
+
+**Image verification command:**
+
+```bash
+docker image ls restauranty-items
+```
+
+**Observed result:**
+
+```text
+IMAGE                    IMAGE ID       DISK USAGE
+restauranty-items:local  956f64e08b0f   286MB
+```
+
+![Items Image Build](screenshots/04-docker/items-image-build.png)
+
+*Figure 29 — Successful Build and Verification of the Items Docker Image.*
+
+### 14.5 — Docker Image Security Verification
+
+The Docker image was inspected to verify that the local `.env` file was not included.
+
+**Verification command:**
+
+```bash
+docker run --rm --entrypoint sh restauranty-items:local \
+  -c 'if test -f /app/.env; then echo "WARNING: .env found"; else echo "OK: .env not found"; fi'
+```
+
+**Observed result:**
+
+```text
+OK: .env not found
+```
+
+The verification confirmed that the `.env` file was not present at `/app/.env` in the built image.
+
+![Items Docker Security Test](screenshots/04-docker/items-image-env-excluded.png)
+
+*Figure 30 — Verification That the Items Docker Image Does Not Contain the .env File.*
+
+### 14.6 — Running the Items Container
+
+The Items container was started on the existing dedicated Docker network.
+
+The existing MongoDB container was reused.
+
+**Docker network:**
+
+`restauranty-local-net`
+
+**MongoDB connection URI:**
+
+```text
+mongodb://restauranty-mongo:27017/Restauranty
+```
+
+**Container execution command:**
+
+```bash
+docker run -d \
+  --name restauranty-items-test \
+  --network restauranty-local-net \
+  --env-file backend/items/.env \
+  -e MONGODB_URI=mongodb://restauranty-mongo:27017/Restauranty \
+  -e PORT=3003 \
+  -p 127.0.0.1:3103:3003 \
+  restauranty-items:local
+```
+
+**Container configuration:**
+
+- Container name: `restauranty-items-test`
+- Docker image: `restauranty-items:local`
+- Docker network: `restauranty-local-net`
+- Internal port: `3003`
+- Host port: `3103`
+- Database name: `Restauranty`
+- Runtime environment: `backend/items/.env`
+
+Port 3103 was selected on the host to avoid conflicts with the existing local Items service running on port 3003.
+
+The container was started successfully.
+
+**Verification command:**
+
+```bash
+docker ps --filter "name=restauranty-items-test"
+```
+
+**Observed result:**
+
+```text
+STATUS: Up
+PORTS: 127.0.0.1:3103->3003/tcp
+NAME: restauranty-items-test
+```
+
+![Items Container Running](screenshots/04-docker/items-container-test.png)
+
+*Figure 31 — Items Microservice Container Successfully Running on the Dedicated Docker Network.*
+
+### 14.7 — HTTP Endpoint Verification
+
+The Items service endpoint was tested through the mapped host port.
+
+**Test command:**
+
+```bash
+curl -i http://127.0.0.1:3103/api/items
+```
+
+**Observed HTTP response:**
+
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+```
+
+**Response body:**
+
+```text
+"Items Server UP!"
+```
+
+The successful HTTP response confirmed that the Items service was reachable through the Docker container.
+
+![Items API Test](screenshots/04-docker/items-api-test.png)
+
+*Figure 32 — Successful Items API Health Check Returning HTTP 200 OK.*
+
+### 14.8 — Result
+
+**Status: Completed — Initial Container Verification**
+
+The following objectives were achieved:
+
+- Created a production-oriented Dockerfile for the Items service.
+- Created a `.dockerignore` file.
+- Successfully built the Items Docker image.
+- Verified that the `.env` file was excluded from the image.
+- Started the Items container on the dedicated Docker network.
+- Configured the MongoDB connection URI at runtime.
+- Verified that the container was running.
+- Confirmed HTTP 200 OK from the Items API endpoint.
+
+The initial container availability test was successful.
+
+MongoDB connectivity should also be confirmed through the Items container logs before marking database integration as fully verified.
+
+Full communication, authentication, and authorization tests will be performed after integrating all application services using Docker Compose.
+
+### 14.9 — Updated Containerization Progress
+
+| Service | Status | Internal Port | Test Host Port |
+|---|---|---|---|
+| Authentication | Completed — Initial Test | 3001 | 3101 |
+| Discounts | Completed — Initial Test | 3002 | 3102 |
+| Items | Completed — Initial Test | 3003 | 3103 |
+| React Frontend | Pending | 3000 (Development) | TBD |
+
 ### Next Steps
-1. Containerize the Items Service.
-2. Build the React frontend image.
-3. Configure Docker Compose.
-4. Test communication between all containers.
-5. Update the documentation with the remaining implementation steps and screenshots.
-6. Commit and push the verified changes.
 
-## Final Deployment Goal
-
-The completed containerized application will support deployment through Docker Compose and later Kubernetes, using consistent images and runtime configuration.
+1. Create the React frontend Dockerfile.
+2. Build and verify the React frontend image.
+3. Configure Docker Compose for all application services.
+4. Integrate MongoDB and the reverse proxy.
+5. Test communication between frontend and backend containers.
+6. Verify authentication and protected API endpoints.
+7. Update the documentation with integration test results.
+8. Commit and push the remaining verified changes.
+9. Prepare the application for Kubernetes deployment.
