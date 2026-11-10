@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const { isAuthenticated } = require('../middleware/jwt.middleware');
+router.use(isAuthenticated);
 
 const Dietary = require('../models/dietary.model')
 

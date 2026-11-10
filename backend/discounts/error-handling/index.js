@@ -5,15 +5,18 @@ module.exports = (app) => {
   });
 
   app.use((err, req, res, next) => {
-    // whenever you call next(err), this middleware will handle the error
-    // always logs the error
-    console.error("ERROR", req.method, req.path, err);
+  console.error("ERROR", req.method, req.path, err);
 
-    // only render if the error ocurred before sending the response
-    if (!res.headersSent) {
-      res.status(500).json({
-        message: "Internal server error. Check the server console",
-      });
-    }
-  });
+  if (err.name === "UnauthorizedError" && !res.headersSent) {
+    return res.status(401).json({
+      message: "Invalid or missing token"
+    });
+  }
+
+  if (!res.headersSent) {
+    res.status(500).json({
+      message: "Internal server error. Check the server console",
+    });
+  }
+});
 };
