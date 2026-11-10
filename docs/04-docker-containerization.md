@@ -314,15 +314,136 @@ curl -i http://127.0.0.1:3101/api/auth
 
 The corrected Authentication Docker image was verified to exclude the `.env` file, and the recreated container successfully connected to MongoDB and responded to HTTP requests.
 
-## Next Steps
 
-1. Containerize the Discounts Service.
-2. Containerize the Items Service.
-3. Build the React frontend image.
-4. Configure Docker Compose.
-5. Test communication between all containers.
-6. Update the documentation with the remaining implementation steps and screenshots.
-7. Commit and push the verified changes.
+## Step 13 — Discounts Microservice Dockerization
+
+### Objective
+
+Containerizing the Discounts microservice using the same Dockerization workflow established for the Authentication service.
+
+### 13.1 — Preparing the Dockerfile
+
+A Dockerfile was created in:
+
+`backend/discounts/Dockerfile`
+
+The Dockerfile was configured to:
+
+- Use the Node.js 22 Alpine base image.
+- Set `/app` as the working directory.
+- Install production dependencies using `npm ci --omit=dev`.
+- Copy application files into the image.
+- Set the production environment.
+- Run the application as a non-root user.
+- Expose port 3002.
+- Start the application using `node server.js`.
+
+### 13.2 — Building the Docker Image
+
+The Discounts Docker image was built using:
+
+```bash
+docker build -t restauranty-discounts:local ./backend/discounts
+```
+
+The image was verified using:
+
+```bash
+docker image ls restauranty-discounts
+```
+
+![Discounts Image Build](screenshots/04-docker/discounts-image-build.png)
+
+*Figure 26 — Building and Verifying the Discounts Docker Image.*
+
+### 13.3 — Docker Image Security
+
+A `.dockerignore` file was created to exclude environment files, local dependencies, and unnecessary development files from the build context.
+
+File location:
+
+`backend/discounts/.dockerignore`
+
+The image was checked for the presence of a local `.env` file using:
+
+```bash
+docker run --rm --entrypoint sh restauranty-discounts:local \
+  -c 'if test -f /app/.env; then echo "WARNING: .env found"; else echo "OK: .env not found"; fi'
+```
+
+Expected successful result:
+
+`OK: .env not found`
+
+![Discounts Security Verification](screenshots/04-docker/discounts-image-env-excluded.png)
+
+*Figure 27 — Verification of Environment File Exclusion from the Discounts Docker Image.*
+
+### 13.4 — Running the Discounts Container
+
+The Discounts container was started using the existing Docker network and MongoDB container.
+
+```bash
+docker run -d \
+  --name restauranty-discounts-test \
+  --network restauranty-local-net \
+  --env-file backend/discounts/.env \
+  -e MONGODB_URI=mongodb://restauranty-mongo:27017/Restauranty \
+  -e PORT=3002 \
+  -p 127.0.0.1:3102:3002 \
+  restauranty-discounts:local
+```
+
+**Container configuration:**
+
+- Container name: `restauranty-discounts-test`
+- Docker network: `restauranty-local-net`
+- Internal port: `3002`
+- Host port: `3102`
+- Database: `Restauranty`
+
+### 13.5 — Container Verification
+
+The following commands were executed:
+
+```bash
+docker ps --filter "name=restauranty-discounts-test"
+
+docker logs --tail 15 restauranty-discounts-test
+
+curl -i http://127.0.0.1:3102/api/discounts
+```
+
+**Observed results:**
+
+```text
+Server listening on http://localhost:3002
+Connected to Mongo! Database name: "Restauranty"
+HTTP/1.1 200 OK
+"Discounts Server UP!"
+```
+
+![Discounts Container Test](screenshots/04-docker/discounts-container-test.png)
+
+*Figure 28 — Successful Discounts Container Startup, MongoDB Connectivity, and HTTP 200 Verification.*
+
+### 13.6 — Result
+
+**Status: Completed — Initial Container Verification**
+
+The Discounts microservice was successfully containerized and connected to the existing MongoDB container through the dedicated Docker network.
+
+The API endpoint was verified to return HTTP 200 OK.
+
+Full integration and authorization testing will be completed after configuring Docker Compose.
+
+### Next Steps
+1. Containerize the Items Service.
+2. Build the React frontend image.
+3. Configure Docker Compose.
+4. Test communication between all containers.
+5. Update the documentation with the remaining implementation steps and screenshots.
+6. Commit and push the verified changes.
 
 ## Final Deployment Goal
 
