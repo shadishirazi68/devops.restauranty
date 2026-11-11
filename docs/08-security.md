@@ -43,7 +43,7 @@ Two Secrets were created in the `restauranty` namespace:
 
 These values were supplied to Kubernetes at runtime instead of being included in the committed manifest YAML files. `kubectl describe secret` confirmed the existence of `MONGODB_URI` and `SECRET` **without printing their values**.
 
-![Figure 68 — Kubernetes backend Secret verification](docs/screenshots/07-security/kubernetes-backend-secrets-verified.png)
+![Figure 68 — Kubernetes backend Secret verification](screenshots/08-security/kubernetes-backend-secrets-verified.png)
 
 *Figure 68 — Kubernetes Secret metadata and key sizes verified without revealing secret contents.*
 
@@ -59,15 +59,15 @@ The application uses JWT-based authentication in its Node/Express backends. Thes
 | `GET /api/discounts/coupons` and `/api/discounts/campaign` | `401 Unauthorized` | Both unauthenticated requests were rejected. |
 | `GET /api/items/items` | `401 Unauthorized` | `{"message":"Invalid or missing token"}` |
 
-![Figure 69 — Auth JWT unauthorized request](docs/screenshots/07-security/kubernetes-auth-jwt-unauthorized-test.png)
+![Figure 69 — Auth JWT unauthorized request](screenshots/08-security/kubernetes-auth-jwt-unauthorized-test.png)
 
 *Figure 69 — Auth rejects a request with no JWT.*
 
-![Figure 70 — Discounts unauthorized requests](docs/screenshots/07-security/kubernetes-discounts-unauthorized-test.png)
+![Figure 70 — Discounts unauthorized requests](screenshots/08-security/kubernetes-discounts-unauthorized-test.png)
 
 *Figure 70 — Coupons and campaigns routes reject unauthenticated requests.*
 
-![Figure 71 — Items unauthorized request](docs/screenshots/07-security/kubernetes-items-unauthorized-test.png)
+![Figure 71 — Items unauthorized request](screenshots/08-security/kubernetes-items-unauthorized-test.png)
 
 *Figure 71 — Items rejects a request with no JWT.*
 
