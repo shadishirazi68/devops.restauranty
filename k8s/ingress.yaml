@@ -1,0 +1,53 @@
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: restauranty-ingress
+  namespace: restauranty
+  labels:
+    app: restauranty
+
+spec:
+  ingressClassName: restauranty-nginx
+
+  rules:
+    - host: a9a7a80f0bf184ad9a78f3caef92bbbf-8f06ca7b829dd177.elb.us-east-1.amazonaws.com
+      http:
+        paths:
+
+          # Auth Microservice
+          - path: /api/auth
+            pathType: Prefix
+            backend:
+              service:
+                name: restauranty-auth
+                port:
+                  number: 3001
+
+          # Discounts Microservice
+          - path: /api/discounts
+            pathType: Prefix
+            backend:
+              service:
+                name: restauranty-discounts
+                port:
+                  number: 3002
+
+          # Items Microservice
+          - path: /api/items
+            pathType: Prefix
+            backend:
+              service:
+                name: restauranty-items
+                port:
+                  number: 3003
+
+          # React Frontend
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: restauranty-frontend
+                port:
+                  number: 80

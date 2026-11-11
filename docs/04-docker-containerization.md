@@ -1383,11 +1383,3 @@ The application images are now available for the next deployment phase.
 3. Configure Kubernetes services, Secrets, and environment variables.
 4. Deploy and test the application on Kubernetes.
 5. Document Kubernetes deployment results.
-
-### Next Steps
-
-1. Verify container image architecture compatibility.
-2. Prepare Kubernetes deployment manifests.
-3. Configure Kubernetes services, Secrets, and environment variables.
-4. Deploy and test the application on Kubernetes.
-5. Document Kubernetes deployment results.

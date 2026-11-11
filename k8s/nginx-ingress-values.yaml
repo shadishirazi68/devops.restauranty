@@ -1,0 +1,25 @@
+
+controller:
+  replicaCount: 2
+
+  watchNamespace: restauranty
+
+  ingressClass:
+    name: restauranty-nginx
+    create: true
+    setAsDefaultIngress: false
+
+  service:
+    type: LoadBalancer
+    externalTrafficPolicy: Cluster
+
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+      service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+
+    httpPort:
+      enable: true
+      port: 80
+
+    httpsPort:
+      enable: false

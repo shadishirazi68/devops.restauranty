@@ -1,0 +1,66 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restauranty-discounts
+  namespace: restauranty
+  labels:
+    app: restauranty-discounts
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: restauranty-discounts
+
+  template:
+    metadata:
+      labels:
+        app: restauranty-discounts
+
+    spec:
+      containers:
+        - name: discounts
+          image: shadshad/restauranty-discounts:v1
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - name: http
+              containerPort: 3002
+
+          env:
+            - name: PORT
+              value: "3002"
+
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: restauranty-backend-secrets
+                  key: MONGODB_URI
+
+            - name: SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: restauranty-backend-secrets
+                  key: SECRET
+
+          readinessProbe:
+            tcpSocket:
+              port: 3002
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL

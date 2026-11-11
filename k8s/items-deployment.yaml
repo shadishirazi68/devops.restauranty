@@ -1,0 +1,66 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restauranty-items
+  namespace: restauranty
+  labels:
+    app: restauranty-items
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: restauranty-items
+
+  template:
+    metadata:
+      labels:
+        app: restauranty-items
+
+    spec:
+      containers:
+        - name: items
+          image: shadshad/restauranty-items:v1
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - name: http
+              containerPort: 3003
+
+          env:
+            - name: PORT
+              value: "3003"
+
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: restauranty-backend-secrets
+                  key: MONGODB_URI
+
+            - name: SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: restauranty-backend-secrets
+                  key: SECRET
+
+          readinessProbe:
+            tcpSocket:
+              port: 3003
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
