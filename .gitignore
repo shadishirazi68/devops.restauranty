@@ -10,3 +10,4 @@ mobile/.expo
 build
 
 .DS_Store
+/docs/
