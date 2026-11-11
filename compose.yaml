@@ -1,0 +1,58 @@
+
+services:
+  auth:
+    build: ./backend/auth
+    image: restauranty-auth:local
+    env_file:
+      - ./backend/auth/.env
+    environment:
+      MONGODB_URI: mongodb://restauranty-mongo:27017/Restauranty
+      PORT: "3001"
+    networks:
+      - restauranty-local-net
+
+  discounts:
+    build: ./backend/discounts
+    image: restauranty-discounts:local
+    env_file:
+      - ./backend/discounts/.env
+    environment:
+      MONGODB_URI: mongodb://restauranty-mongo:27017/Restauranty
+      PORT: "3002"
+    networks:
+      - restauranty-local-net
+
+  items:
+    build: ./backend/items
+    image: restauranty-items:local
+    env_file:
+      - ./backend/items/.env
+    environment:
+      MONGODB_URI: mongodb://restauranty-mongo:27017/Restauranty
+      PORT: "3003"
+    networks:
+      - restauranty-local-net
+
+  frontend:
+    build: ./client
+    image: restauranty-frontend:local
+    networks:
+      - restauranty-local-net
+
+  proxy:
+    image: haproxy:3.2-alpine
+    ports:
+      - "127.0.0.1:8088:80"
+    volumes:
+      - ./haproxy.docker.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    depends_on:
+      - auth
+      - discounts
+      - items
+      - frontend
+    networks:
+      - restauranty-local-net
+
+networks:
+  restauranty-local-net:
+    external: true

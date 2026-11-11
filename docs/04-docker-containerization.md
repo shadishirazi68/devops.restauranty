@@ -906,14 +906,173 @@ The next phase will configure Docker Compose and reverse-proxy routing to enable
 | React Frontend | restauranty-frontend:local | Initial Test Passed |
 | MongoDB | mongo:7 | Existing Container |
 
+
+## Step 16 — Docker Compose Integration
+
+### Objective
+
+Integrating the containerized Restauranty microservices using Docker Compose and HAProxy to enable communication between the frontend and backend services.
+
+### 16.1 — Docker Compose Configuration
+
+A Docker Compose configuration file was created in the project root.
+
+**File:** `compose.yaml`
+
+The configuration defines five services:
+
+- Authentication microservice
+- Discounts microservice
+- Items microservice
+- React frontend
+- HAProxy reverse proxy
+
+All services were connected to the existing `restauranty-local-net` Docker network.
+
+The existing MongoDB container was reused without recreating the database.
+
+Environment variables were loaded from local environment files at runtime.
+
+### 16.2 — HAProxy Configuration
+
+A separate HAProxy configuration file was created for the containerized environment.
+
+**File:** `haproxy.docker.cfg`
+
+The reverse proxy was configured to forward requests based on URL paths.
+
+| Request Path | Target Service | Internal Port |
+|---|---|---|
+| `/api/auth` | auth | 3001 |
+| `/api/discounts` | discounts | 3002 |
+| `/api/items` | items | 3003 |
+| `/` | frontend | 80 |
+
+The HAProxy container was exposed locally through port 8088.
+
+### 16.3 — Docker Compose Validation
+
+The configuration was validated using:
+
+```bash
+docker compose config --quiet
+```
+
+**Result:** Passed
+
+No configuration errors were reported.
+
+### 16.4 — Building and Starting the Services
+
+The application stack was started using:
+
+```bash
+docker compose up -d --build
+```
+
+All application images were successfully built.
+
+**Verification command:**
+
+```bash
+docker compose ps
+```
+
+**Observed results:**
+
+| Service | Status |
+|---|---|
+| auth | Running |
+| discounts | Running |
+| items | Running |
+| frontend | Running |
+| proxy | Running |
+
+![Docker Compose Services](screenshots/04-docker/compose-services-running.png)
+
+*Figure 37 — All Five Restauranty Services Successfully Started Using Docker Compose.*
+
+### 16.5 — API Routing Verification
+
+The backend API endpoints were tested through the HAProxy entry point.
+
+**Verification commands:**
+
+```bash
+curl -i http://127.0.0.1:8088/api/auth
+
+curl -i http://127.0.0.1:8088/api/discounts
+
+curl -i http://127.0.0.1:8088/api/items
+
+curl -i http://127.0.0.1:8088/
+```
+
+**Observed results:**
+
+| Endpoint | HTTP Status | Response |
+|---|---|---|
+| `/api/auth` | 200 OK | Auth Server UP! |
+| `/api/discounts` | 200 OK | Discounts Server UP! |
+| `/api/items` | 200 OK | Items Server UP! |
+| `/` | 200 OK | HTML response |
+
+The results confirmed that HAProxy successfully routed HTTP requests to the corresponding application containers.
+
+![Docker Compose API Tests](screenshots/04-docker/compose-api-test.png)
+
+*Figure 38 — Successful API Routing Through HAProxy with HTTP 200 Responses.*
+
+### 16.6 — Frontend Browser Verification
+
+The containerized application was accessed through:
+
+`http://localhost:8088`
+
+The Restauranty dashboard was displayed successfully.
+
+The frontend was served by Nginx through the HAProxy reverse proxy.
+
+![Restauranty Dashboard](screenshots/04-docker/compose-browser-test.png)
+
+*Figure 39 — Restauranty Dashboard Successfully Accessed Through the Docker Compose Stack.*
+
+### 16.7 — Results
+
+**Status: Initial Integration Tests Passed**
+
+The following objectives were achieved:
+
+- Created the Docker Compose configuration.
+- Connected all application services to the existing Docker network.
+- Reused the existing MongoDB container.
+- Configured HAProxy routing.
+- Built and started five application containers.
+- Verified the three backend API health endpoints.
+- Confirmed HTTP 200 responses.
+- Successfully displayed the frontend dashboard.
+
+### 16.8 — Remaining Integration Tests
+
+The initial availability and routing tests were successful.
+
+However, full end-to-end functionality has not yet been verified.
+
+The remaining checks include:
+
+- User login and registration.
+- JWT authentication and authorization.
+- Protected API requests.
+- Frontend-to-backend data retrieval.
+- Database operations through the application.
+
+These tests will be completed before marking full application integration as verified.
+
 ### Next Steps
 
-1. Configure Docker Compose.
-2. Configure reverse-proxy routing between frontend and backend services.
-3. Verify inter-container communication.
-4. Test frontend authentication and protected API endpoints.
-5. Complete integration testing.
-6. Prepare container images for Docker Hub.
-7. Proceed with Kubernetes deployment.
-
-
+1. Complete end-to-end authentication testing.
+2. Verify protected API operations.
+3. Document integration test results.
+4. Commit and push the Docker Compose configuration.
+5. Prepare images for Docker Hub.
+6. Begin Kubernetes deployment preparation.
