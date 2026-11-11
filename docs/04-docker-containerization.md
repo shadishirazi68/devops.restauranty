@@ -1068,11 +1068,96 @@ The remaining checks include:
 
 These tests will be completed before marking full application integration as verified.
 
-### Next Steps
 
-1. Complete end-to-end authentication testing.
-2. Verify protected API operations.
-3. Document integration test results.
-4. Commit and push the Docker Compose configuration.
-5. Prepare images for Docker Hub.
-6. Begin Kubernetes deployment preparation.
+## Step 17 — Frontend and Backend Integration Verification
+
+### Objective
+
+Verifying frontend-to-backend communication through the Docker Compose deployment and HAProxy reverse proxy.
+
+### 17.1 — Authentication and API Testing
+
+The containerized Restauranty application was accessed through:
+
+`http://localhost:8088`
+
+Chrome Developer Tools was used to inspect network requests during authentication and navigation.
+
+The following requests were observed:
+
+| Request | HTTP Status | Result |
+|---|---|---|
+| Login | 200 OK | Passed |
+| Token Verification | 200 OK | Passed |
+| Items Retrieval | 200 OK | Passed |
+
+After authentication, the Items page was displayed successfully.
+
+The results demonstrated successful communication between the React frontend and backend services through the Docker Compose deployment.
+
+### 17.2 — Network Verification
+
+The Network tab in Chrome Developer Tools was used to inspect the application requests.
+
+All three relevant application requests returned successful HTTP responses.
+
+![Frontend Backend Integration](screenshots/04-docker/compose-login-verify-items-test.png)
+
+*Figure 40 — Successful Login, Authentication Verification, and Items API Requests Through Docker Compose.*
+
+### 17.3 — Result
+
+**Status: Passed — Login and Items Retrieval**
+
+The following functionality was verified:
+
+- Successful login request.
+- Successful authentication verification request.
+- Successful Items API request.
+- Successful navigation to the authenticated Items page.
+- Communication through the HAProxy reverse proxy.
+
+The test confirms initial frontend-to-backend integration.
+
+Further tests are required to verify JWT authorization headers, unauthorized access rejection, and database write operations.
+
+
+### 17.4 — Unauthorized API Access Verification
+
+**Objective**
+
+Verifying that the Items microservice rejects requests to protected endpoints when no JWT authentication token is provided.
+
+**Test command:**
+
+```bash
+curl -i http://127.0.0.1:8088/api/items/items
+```
+
+**Observed response:**
+
+```http
+HTTP/1.1 401 Unauthorized
+```
+
+```json
+{
+  "message": "Invalid or missing token"
+}
+```
+
+The request was sent through the HAProxy reverse proxy without an Authorization header.
+
+The Items microservice rejected the request with HTTP 401 Unauthorized.
+
+![JWT Unauthorized Access Test](screenshots/04-docker/compose-jwt-unauthorized-test.png)
+
+*Figure 41 — Protected Items API Rejecting a Request Without a JWT Token.*
+
+**Result: Passed**
+
+The test confirmed that the protected Items API endpoint rejects unauthenticated requests in the Docker Compose environment.
+
+Together with the previously verified successful login, token verification, and Items retrieval requests, this provides evidence of the initial authentication integration.
+
+Additional authorization and database operation tests remain outside the scope of this verification.
