@@ -707,14 +707,213 @@ Full communication, authentication, and authorization tests will be performed af
 | Items | Completed — Initial Test | 3003 | 3103 |
 | React Frontend | Pending | 3000 (Development) | TBD |
 
+
+## Step 15 — React Frontend Dockerization
+
+### Objective
+
+Containerizing the Restauranty React frontend using a multi-stage Docker build to create a production-ready application image.
+
+The goal was to build the React application, serve its static files through Nginx, and verify that the application was accessible through a Docker container.
+
+### 15.1 — Creating the Frontend Dockerfile
+
+A multi-stage Dockerfile was created at:
+
+`client/Dockerfile`
+
+The first stage used Node.js 22 Alpine to install dependencies and build the React application.
+
+The second stage used Nginx Alpine to serve the compiled frontend.
+
+**Dockerfile configuration:**
+
+```dockerfile
+FROM node:22-alpine AS builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+
+RUN npm ci
+
+COPY . .
+
+ENV REACT_APP_SERVER_URL=""
+
+RUN npm run build
+
+FROM nginx:alpine
+
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+COPY --from=builder /app/build /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+This multi-stage approach separates the build environment from the final runtime image.
+
+### 15.2 — Configuring Nginx
+
+An Nginx configuration file was created at:
+
+`client/nginx.conf`
+
+The configuration listens on port 80 and serves the React application from the Nginx HTML directory.
+
+The `try_files` directive provides fallback routing to `index.html`, allowing React Router paths to work when pages are refreshed.
+
+A `.dockerignore` file was also created to exclude unnecessary development files, dependencies, and local environment files.
+
+### 15.3 — Building the Frontend Image
+
+The frontend Docker image was built using:
+
+```bash
+docker build -t restauranty-frontend:local ./client
+```
+
+The build completed successfully.
+
+**Verification command:**
+
+```bash
+docker image ls restauranty-frontend
+```
+
+**Observed image details:**
+
+```text
+IMAGE: restauranty-frontend:local
+IMAGE ID: 36beb2a9b056
+DISK USAGE: 105MB
+```
+
+![Frontend Image Build](screenshots/04-docker/frontend-image-build.png)
+
+*Figure 33 — Successful Multi-Stage Docker Build of the React Frontend.*
+
+![Frontend Image Verification](screenshots/04-docker/frontend-image-verified.png)
+
+*Figure 34 — Verification of the Restauranty Frontend Docker Image.*
+
+### 15.4 — Running the Frontend Container
+
+The frontend container was started using the existing Docker network.
+
+**Command:**
+
+```bash
+docker run -d \
+  --name restauranty-frontend-test \
+  --network restauranty-local-net \
+  -p 127.0.0.1:3100:80 \
+  restauranty-frontend:local
+```
+
+**Container configuration:**
+
+- Container name: `restauranty-frontend-test`
+- Docker image: `restauranty-frontend:local`
+- Docker network: `restauranty-local-net`
+- Internal port: `80`
+- Host port: `3100`
+- Web server: Nginx
+
+The container started successfully.
+
+### 15.5 — Verifying the Container
+
+The following commands were executed:
+
+```bash
+docker ps --filter "name=restauranty-frontend-test"
+
+docker logs --tail 15 restauranty-frontend-test
+
+curl -I http://127.0.0.1:3100/
+
+curl -I http://127.0.0.1:3100/login
+```
+
+**Observed results:**
+
+```text
+Container Status: Up
+Nginx: Started successfully
+
+GET /       → HTTP 200 OK
+GET /login  → HTTP 200 OK
+```
+
+Both routes returned successful HTTP responses.
+
+![Frontend Container Test](screenshots/04-docker/frontend-container-test.png)
+
+*Figure 35 — Successful Frontend Container Startup and HTTP Endpoint Verification.*
+
+### 15.6 — Browser Verification
+
+The containerized frontend was accessed through the browser using:
+
+`http://localhost:3100`
+
+The Restauranty dashboard was displayed successfully.
+
+The page contained the following sections:
+
+- Items
+- Coupons
+- Campaigns
+- Categories
+- Login and Registration
+
+![Frontend Browser Test](screenshots/04-docker/frontend-browser-test.png)
+
+*Figure 36 — Restauranty React Dashboard Successfully Served from the Nginx Container.*
+
+### 15.7 — Result
+
+**Status: Completed — Initial Frontend Container Verification**
+
+The following objectives were achieved:
+
+- Created a multi-stage Dockerfile.
+- Built the React application using Node.js.
+- Created a lightweight Nginx runtime image.
+- Configured React Router fallback routing.
+- Started the frontend container.
+- Verified the container was running.
+- Confirmed HTTP 200 responses.
+- Successfully displayed the dashboard in the browser.
+
+The frontend was successfully containerized.
+
+Frontend-to-backend API communication has not yet been verified in the containerized environment.
+
+The next phase will configure Docker Compose and reverse-proxy routing to enable communication between the frontend and backend services.
+
+### 15.8 — Containerization Progress
+
+| Service | Image | Status |
+|---|---|---|
+| Authentication | restauranty-auth:local | Initial Test Passed |
+| Discounts | restauranty-discounts:local | Initial Test Passed |
+| Items | restauranty-items:local | Initial Test Passed |
+| React Frontend | restauranty-frontend:local | Initial Test Passed |
+| MongoDB | mongo:7 | Existing Container |
+
 ### Next Steps
 
-1. Create the React frontend Dockerfile.
-2. Build and verify the React frontend image.
-3. Configure Docker Compose for all application services.
-4. Integrate MongoDB and the reverse proxy.
-5. Test communication between frontend and backend containers.
-6. Verify authentication and protected API endpoints.
-7. Update the documentation with integration test results.
-8. Commit and push the remaining verified changes.
-9. Prepare the application for Kubernetes deployment.
+1. Configure Docker Compose.
+2. Configure reverse-proxy routing between frontend and backend services.
+3. Verify inter-container communication.
+4. Test frontend authentication and protected API endpoints.
+5. Complete integration testing.
+6. Prepare container images for Docker Hub.
+7. Proceed with Kubernetes deployment.
+
+
