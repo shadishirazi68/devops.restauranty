@@ -1,0 +1,10 @@
+name: Restauranty CI/CD
+
+on:
+  workflow_dispatch:
+
+jobs:
+  manual-trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Select final-project to run the full pipeline"
