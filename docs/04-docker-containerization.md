@@ -1161,3 +1161,233 @@ The test confirmed that the protected Items API endpoint rejects unauthenticated
 Together with the previously verified successful login, token verification, and Items retrieval requests, this provides evidence of the initial authentication integration.
 
 Additional authorization and database operation tests remain outside the scope of this verification.
+
+
+## Step 18 — Publishing Docker Images to Docker Hub
+
+### Objective
+
+Publishing the four containerized Restauranty application services to Docker Hub for image distribution and future Kubernetes deployment.
+
+### 18.1 — Image Security Verification
+
+Before publishing, the Docker images were inspected for potentially sensitive files, including `.env`, `.pem`, and `.key` files.
+
+The checks did not identify files matching these patterns in the inspected application directories.
+
+![Docker Image Security Check](screenshots/04-docker/dockerhub-security-check.png)
+
+*Figure 42 — Docker Image File Security Verification Before Publishing.*
+
+**Result: Passed — File Pattern Inspection**
+
+This inspection does not constitute a complete secrets or vulnerability scan.
+
+### 18.2 — Docker Hub Authentication
+
+The Docker CLI was authenticated using the Docker Hub account `shadshad`.
+
+**Command:**
+
+```bash
+docker login -u shadshad
+```
+
+**Observed result:**
+
+```text
+Login Succeeded
+```
+
+![Docker Hub Login](screenshots/04-docker/dockerhub-login-success.png)
+
+*Figure 43 — Successful Docker Hub Authentication.*
+
+### 18.3 — Tagging Docker Images
+
+The four local Docker images were tagged for publishing.
+
+**Commands:**
+
+```bash
+docker tag restauranty-auth:local shadshad/restauranty-auth:v1
+docker tag restauranty-discounts:local shadshad/restauranty-discounts:v1
+docker tag restauranty-items:local shadshad/restauranty-items:v1
+docker tag restauranty-frontend:local shadshad/restauranty-frontend:v1
+```
+
+The resulting image names were verified.
+
+![Docker Hub Image Tags](screenshots/04-docker/dockerhub-image-tags.png)
+
+*Figure 44 — Four Restauranty Images Tagged for Docker Hub.*
+
+### 18.4 — Publishing Images
+
+The four images were published under the `shadshad` Docker Hub namespace.
+
+**Image repositories:**
+
+| Service | Docker Hub Image |
+|---|---|
+| Authentication | `shadshad/restauranty-auth:v1` |
+| Discounts | `shadshad/restauranty-discounts:v1` |
+| Items | `shadshad/restauranty-items:v1` |
+| Frontend | `shadshad/restauranty-frontend:v1` |
+
+**Publishing commands:**
+
+```bash
+docker push shadshad/restauranty-auth:v1
+docker push shadshad/restauranty-discounts:v1
+docker push shadshad/restauranty-items:v1
+docker push shadshad/restauranty-frontend:v1
+```
+
+The Docker Hub repositories were inspected after publishing.
+
+All four repositories appeared under the account namespace with recent push timestamps.
+
+**Repository visibility:** Public.
+
+![Docker Hub Repositories](screenshots/04-docker/dockerhub-repositories.png)
+
+*Figure 45 — Four Published Restauranty Repositories in Docker Hub.*
+
+### 18.5 — Result
+
+**Status: Completed — Docker Hub Publication**
+
+The following objectives were achieved:
+
+- Verified the existence of four local Docker images.
+- Performed basic sensitive-file checks.
+- Authenticated to Docker Hub.
+- Tagged the images using the `v1` version.
+- Published the images to Docker Hub.
+- Verified the repository listings.
+
+The application images are now available for the next deployment phase.
+
+
+## Step 18 — Publishing Docker Images to Docker Hub
+
+### Objective
+
+Publishing the four containerized Restauranty application services to Docker Hub for image distribution and future Kubernetes deployment.
+
+### 18.1 — Image Security Verification
+
+Before publishing, the Docker images were inspected for potentially sensitive files, including `.env`, `.pem`, and `.key` files.
+
+The checks did not identify files matching these patterns in the inspected application directories.
+
+![Docker Image Security Check](screenshots/04-docker/dockerhub-security-check.png)
+
+*Figure 42 — Docker Image File Security Verification Before Publishing.*
+
+**Result: Passed — File Pattern Inspection**
+
+This inspection does not constitute a complete secrets or vulnerability scan.
+
+### 18.2 — Docker Hub Authentication
+
+The Docker CLI was authenticated using the Docker Hub account `shadshad`.
+
+**Command:**
+
+```bash
+docker login -u shadshad
+```
+
+**Observed result:**
+
+```text
+Login Succeeded
+```
+
+![Docker Hub Login](screenshots/04-docker/dockerhub-login-success.png)
+
+*Figure 43 — Successful Docker Hub Authentication.*
+
+### 18.3 — Tagging Docker Images
+
+The four local Docker images were tagged for publishing.
+
+**Commands:**
+
+```bash
+docker tag restauranty-auth:local shadshad/restauranty-auth:v1
+docker tag restauranty-discounts:local shadshad/restauranty-discounts:v1
+docker tag restauranty-items:local shadshad/restauranty-items:v1
+docker tag restauranty-frontend:local shadshad/restauranty-frontend:v1
+```
+
+The resulting image names were verified.
+
+![Docker Hub Image Tags](screenshots/04-docker/dockerhub-image-tags.png)
+
+*Figure 44 — Four Restauranty Images Tagged for Docker Hub.*
+
+### 18.4 — Publishing Images
+
+The four images were published under the `shadshad` Docker Hub namespace.
+
+**Image repositories:**
+
+| Service | Docker Hub Image |
+|---|---|
+| Authentication | `shadshad/restauranty-auth:v1` |
+| Discounts | `shadshad/restauranty-discounts:v1` |
+| Items | `shadshad/restauranty-items:v1` |
+| Frontend | `shadshad/restauranty-frontend:v1` |
+
+**Publishing commands:**
+
+```bash
+docker push shadshad/restauranty-auth:v1
+docker push shadshad/restauranty-discounts:v1
+docker push shadshad/restauranty-items:v1
+docker push shadshad/restauranty-frontend:v1
+```
+
+The Docker Hub repositories were inspected after publishing.
+
+All four repositories appeared under the account namespace with recent push timestamps.
+
+**Repository visibility:** Public.
+
+![Docker Hub Repositories](screenshots/04-docker/dockerhub-repositories.png)
+
+*Figure 45 — Four Published Restauranty Repositories in Docker Hub.*
+
+### 18.5 — Result
+
+**Status: Completed — Docker Hub Publication**
+
+The following objectives were achieved:
+
+- Verified the existence of four local Docker images.
+- Performed basic sensitive-file checks.
+- Authenticated to Docker Hub.
+- Tagged the images using the `v1` version.
+- Published the images to Docker Hub.
+- Verified the repository listings.
+
+The application images are now available for the next deployment phase.
+
+### Next Steps
+
+1. Verify container image architecture compatibility.
+2. Prepare Kubernetes deployment manifests.
+3. Configure Kubernetes services, Secrets, and environment variables.
+4. Deploy and test the application on Kubernetes.
+5. Document Kubernetes deployment results.
+
+### Next Steps
+
+1. Verify container image architecture compatibility.
+2. Prepare Kubernetes deployment manifests.
+3. Configure Kubernetes services, Secrets, and environment variables.
+4. Deploy and test the application on Kubernetes.
+5. Document Kubernetes deployment results.
