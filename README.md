@@ -97,3 +97,7 @@ For the frontend, use the `REACT_APP_` prefix: `REACT_APP_API_URL=http://localho
 - **Monitoring**: Prometheus metrics (`/metrics` endpoint on each backend service)
 - **Routing**: HAProxy (local) / Kubernetes Ingress (production)
 - **Database**: MongoDB
+
+## Kubernetes Rollback Demo
+
+[Watch the AWS EKS Rollback Demo](demos/kubernetes-rollback-demo.mp4)
