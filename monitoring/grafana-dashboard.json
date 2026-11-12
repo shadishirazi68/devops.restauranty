@@ -170,7 +170,7 @@
                       "spec": {
                         "editorMode": "code",
                         "expr": "max by (job) (mongo_connection_status)",
-                        "legendFormat": "{{jobs}}",
+                        "legendFormat": "{{job}}",
                         "range": true
                       },
                       "labels": {

@@ -10,4 +10,7 @@ mobile/.expo
 build
 
 .DS_Store
-/docs/
+
+# Temporary documentation tools
+/update-restauranty-cloudinary-docs.py
+/restauranty-cloudinary-docs-package.zip
