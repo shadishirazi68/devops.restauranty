@@ -644,6 +644,12 @@ Demonstrates authorized and unauthorized MongoDB connection attempts.
 
 [Watch the NetworkPolicy Security Test](demos/networkpolicy-security-test.mp4)
 
+### 4. Final Git Push & Successful CI/CD Deployment
+
+Demonstrates the complete automated workflow, from the final Git push to a successful GitHub Actions pipeline and deployment to AWS EKS.
+
+[Watch the Final CI/CD Deployment Demo](demos/restauranty-final-cicd-deployment-demo.mp4)
+
 ## Technical Documentation
 
 The complete implementation process is documented in separate files.
