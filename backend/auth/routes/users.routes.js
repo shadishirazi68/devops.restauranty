@@ -1,5 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const { isAuthenticated } = require('../middleware/jwt.middleware');
+
+// Security fix: these routes were public (list, read, update and delete users).
+// They now require a valid JWT, and the password hash is never returned.
+router.use(isAuthenticated);
 
 const User = require('../models/User.model')
 
@@ -7,7 +12,7 @@ const User = require('../models/User.model')
 
 router.get("/", (req, res) => {
 
-    User.find().then(users => {
+    User.find().select("-password").then(users => {
         res.json(users)
     }).catch(err => {
         res.status(400).json(err)
@@ -19,7 +24,7 @@ router.get("/:id", (req, res) => {
 
     const id = req.params.id
 
-    User.findById(id).then(user => {
+    User.findById(id).select("-password").then(user => {
         res.json(user)
     }).catch(err => {
         res.status(400).json(err)
